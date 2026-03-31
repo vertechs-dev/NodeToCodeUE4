@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Models/N2CTranslation.h"
 #include "N2CLLMTypes.generated.h"
 
 /** Delegate for receiving LLM responses */

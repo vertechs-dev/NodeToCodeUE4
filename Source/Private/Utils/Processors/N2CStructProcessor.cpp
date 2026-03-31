@@ -13,7 +13,7 @@ void FN2CStructProcessor::ExtractNodeProperties(UK2Node* Node, FN2CNodeDefinitio
             OutNodeDef.MemberName = GetCleanClassName(Struct->GetName());
 
             // Get the path name and extract just the base name before the period
-            const FString FullPath = Struct->GetStructPathName().ToString();
+            const FString FullPath = Struct->GetPathName();
             int32 DotIndex;                                                                                                                                                                                                                
             if (FullPath.FindChar('.', DotIndex))                                                                                                                                                                                          
             {                                                                                                                                                                                                                              
@@ -42,7 +42,7 @@ void FN2CStructProcessor::ExtractNodeProperties(UK2Node* Node, FN2CNodeDefinitio
             OutNodeDef.MemberName = GetCleanClassName(Struct->GetName());
 
             // Get the path name and extract just the base name before the period
-            const FString FullPath = Struct->GetStructPathName().ToString();
+            const FString FullPath = Struct->GetPathName();
             int32 DotIndex;
             if (FullPath.FindChar('.', DotIndex))
             {
@@ -87,7 +87,7 @@ void FN2CStructProcessor::ExtractNodeProperties(UK2Node* Node, FN2CNodeDefinitio
             OutNodeDef.MemberName = GetCleanClassName(Struct->GetName());
 
             // Get the path name and extract just the base name before the period
-            const FString FullPath = Struct->GetStructPathName().ToString();
+            const FString FullPath = Struct->GetPathName();
             int32 DotIndex;
             if (FullPath.FindChar('.', DotIndex))
             {

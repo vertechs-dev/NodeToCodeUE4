@@ -79,7 +79,7 @@ FN2CRichTextSyntaxHighlighter::~FN2CRichTextSyntaxHighlighter()
 {
 }
 
-void FN2CRichTextSyntaxHighlighter::ParseTokens(const FString& SourceString, FTextLayout& TargetTextLayout, TArray<ISyntaxTokenizer::FTokenizedLine> TokenizedLines)
+void FN2CRichTextSyntaxHighlighter::ParseTokens(const FString& SourceString, FTextLayout& TargetTextLayout, TArray<FSyntaxTokenizer::FTokenizedLine> TokenizedLines)
 {
     enum class EParseState : uint8
     {
@@ -98,12 +98,12 @@ void FN2CRichTextSyntaxHighlighter::ParseTokens(const FString& SourceString, FTe
     LinesToAdd.Reserve(TokenizedLines.Num());
 
     EParseState ParseState = EParseState::None;
-    for (const ISyntaxTokenizer::FTokenizedLine& TokenizedLine : TokenizedLines)
+    for (const FSyntaxTokenizer::FTokenizedLine& TokenizedLine : TokenizedLines)
     {
         TSharedRef<FString> ModelString = MakeShareable(new FString());
         TArray<TSharedRef<IRun>> Runs;
 
-        for (const ISyntaxTokenizer::FToken& Token : TokenizedLine.Tokens)
+        for (const FSyntaxTokenizer::FToken& Token : TokenizedLine.Tokens)
         {
             const FString TokenText = SourceString.Mid(Token.Range.BeginIndex, Token.Range.Len());
             const FTextRange ModelRange(ModelString->Len(), ModelString->Len() + TokenText.Len());
@@ -260,7 +260,7 @@ void FN2CRichTextSyntaxHighlighter::ParseTokens(const FString& SourceString, FTe
 }
 
 FN2CRichTextSyntaxHighlighter::FN2CRichTextSyntaxHighlighter(
-    TSharedPtr<ISyntaxTokenizer> InTokenizer,
+    TSharedPtr<FSyntaxTokenizer> InTokenizer,
     const FSyntaxTextStyle& InSyntaxTextStyle,
     TSharedPtr<FN2CSyntaxDefinition> InSyntaxDef)
     : FSyntaxHighlighterTextLayoutMarshaller(MoveTemp(InTokenizer))

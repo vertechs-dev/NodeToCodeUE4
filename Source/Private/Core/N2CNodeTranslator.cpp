@@ -2,6 +2,7 @@
 
 #include "Core/N2CNodeTranslator.h"
 
+#include "Internationalization/Regex.h"
 #include "Core/N2CSettings.h"
 #include "Utils/N2CLogger.h"
 #include "Utils/N2CNodeTypeRegistry.h"
@@ -422,10 +423,7 @@ EN2CPinType FN2CNodeTranslator::DeterminePinType(const UEdGraphPin* Pin) const
         return EN2CPinType::Integer64;
     if (PinCategory == UEdGraphSchema_K2::PC_Float)
         return EN2CPinType::Float;
-    if (PinCategory == UEdGraphSchema_K2::PC_Double)
-        return EN2CPinType::Double;
-    if (PinCategory == UEdGraphSchema_K2::PC_Real)
-        return EN2CPinType::Real;
+    // PC_Double and PC_Real do not exist in UE 4.27
     if (PinCategory == UEdGraphSchema_K2::PC_String)
         return EN2CPinType::String;
     if (PinCategory == UEdGraphSchema_K2::PC_Name)

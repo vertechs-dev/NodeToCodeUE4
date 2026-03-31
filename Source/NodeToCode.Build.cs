@@ -23,7 +23,7 @@ public class NodeToCode : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"Engine", 
+				"Engine",
 				"InputCore",
 				"Json",
 				"UnrealEd",
@@ -33,17 +33,17 @@ public class NodeToCode : ModuleRules
 				"Kismet",
 				"GraphEditor",
 				"HTTP",
-				"UMG",
-				"ToolMenus",
 				"ApplicationCore",
-				"Projects"
+				"Projects",
+				"EditorStyle",
+				"ToolMenus"
 			}
 		);
-        
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"DeveloperSettings", "Blutility", "UMGEditor"
+				"DeveloperSettings"
 			}
 		);
 	}

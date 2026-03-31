@@ -2,16 +2,12 @@
 
 #include "NodeToCode.h"
 
-#include <Core/N2CWidgetContainer.h>
-
 #include "HttpModule.h"
 #include "Models/N2CLogging.h"
 #include "Core/N2CEditorIntegration.h"
 #include "Core/N2CSettings.h"
 #include "Code Editor/Models/N2CCodeEditorStyle.h"
 #include "Code Editor/Syntax/N2CSyntaxDefinitionFactory.h"
-#include "Code Editor/Widgets/N2CCodeEditorWidgetFactory.h"
-#include "Editor/EditorPerformanceSettings.h"
 #include "Models/N2CStyle.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
@@ -30,18 +26,6 @@ void FNodeToCodeModule::StartupModule()
 
     // Configure HTTP timeout settings for LLM operations
     ConfigureHttpTimeouts();
-    
-    // Force disable "Use Less CPU when in Background" setting to prevent HTTP request issues when the editor is not focused
-    if (GEditor)
-    {
-        UEditorPerformanceSettings* PerfSettings = GetMutableDefault<UEditorPerformanceSettings>();
-        if (PerfSettings)
-        {
-            PerfSettings->bThrottleCPUWhenNotForeground = false;
-            PerfSettings->SaveConfig();
-            FN2CLogger::Get().Log(TEXT("Disabled 'Use Less CPU when in Background' setting"), EN2CLogSeverity::Info);
-        }
-    }
 
     // Load user secrets
     UN2CUserSecrets* UserSecrets = NewObject<UN2CUserSecrets>();
@@ -67,11 +51,7 @@ void FNodeToCodeModule::StartupModule()
     // Initialize editor integration
     FN2CEditorIntegration::Get().Initialize();
     FN2CLogger::Get().Log(TEXT("Editor integration initialized"), EN2CLogSeverity::Debug);
-    
-    // Register widget factory
-    FN2CCodeEditorWidgetFactory::Register();
-    FN2CLogger::Get().Log(TEXT("Widget factory registered"), EN2CLogSeverity::Debug);
-    
+
     // Verify syntax factory is working
     auto CPPSyntax = FN2CSyntaxDefinitionFactory::Get().CreateDefinition(EN2CCodeLanguage::Cpp);
     auto PythonSyntax = FN2CSyntaxDefinitionFactory::Get().CreateDefinition(EN2CCodeLanguage::Python);
@@ -92,27 +72,14 @@ void FNodeToCodeModule::StartupModule()
 
 void FNodeToCodeModule::ShutdownModule()
 {
-    // Unregister menu extensions
-    UToolMenus::UnRegisterStartupCallback(this);
-    UToolMenus::UnregisterOwner(this);
-
     // Shutdown editor integration
     FN2CEditorIntegration::Get().Shutdown();
-
-    // Unregister widget factory
-    FN2CCodeEditorWidgetFactory::Unregister();
 
     // Shutdown code editor style system
     FN2CCodeEditorStyle::Shutdown();
 
     // Shutdown style system
     N2CStyle::Shutdown();
-    
-    // Clean up widget container
-    if (!GExitPurge)  // Only clean up if not already in exit purge
-    {
-        UN2CWidgetContainer::Reset();
-    }
 
     FN2CLogger::Get().Log(TEXT("NodeToCode plugin shutting down"), EN2CLogSeverity::Info);
 }
@@ -149,7 +116,7 @@ void FNodeToCodeModule::ConfigureHttpTimeouts()
     TimeoutConfig->HttpActivityTimeout = 3600.0f;
     
     // Save the config, which writes to the specified ini file
-    TimeoutConfig->TryUpdateDefaultConfigFile(*DefaultEngineIniPath);
+    TimeoutConfig->SaveConfig();
     
     FN2CLogger::Get().Log(
         TEXT("Added HTTP timeout settings to DefaultEngine.ini to support long-running Ollama requests"), 
@@ -157,7 +124,6 @@ void FNodeToCodeModule::ConfigureHttpTimeouts()
     );
     
     // Apply the changes immediately
-    FConfigCacheIni::LoadGlobalIniFile(GEngineIni, TEXT("Engine"));
     FHttpModule::Get().UpdateConfigs();
 
     // Show notification that restart is required for full effect

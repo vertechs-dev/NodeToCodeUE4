@@ -53,8 +53,10 @@ TSharedRef<FSlateStyleSet> N2CStyle::Create()
     // Set content root using plugin manager
     Style->SetContentRoot(IPluginManager::Get().FindPlugin(TEXT("NodeToCode"))->GetBaseDir() / TEXT("Resources"));
 	
-    Style->Set("NodeToCode.ToolbarButton", 
-        new N2C_PLUGIN_BRUSH(TEXT("button_icon"), FVector2D(128.0f, 128.0f)));
+    Style->Set("NodeToCode.ToolbarButton",
+        new N2C_PLUGIN_BRUSH(TEXT("button_icon"), FVector2D(40.0f, 40.0f)));
+    Style->Set("NodeToCode.ToolbarButton.Small",
+        new N2C_PLUGIN_BRUSH(TEXT("button_icon"), FVector2D(20.0f, 20.0f)));
 
     return Style;
 }

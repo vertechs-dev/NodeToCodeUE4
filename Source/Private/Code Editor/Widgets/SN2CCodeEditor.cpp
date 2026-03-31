@@ -2,6 +2,7 @@
 
 #include "Code Editor/Widgets/SN2CCodeEditor.h"
 #include "Widgets/Text/SMultiLineEditableText.h"
+#include "Widgets/Layout/SGridPanel.h"
 #include "Code Editor/Syntax/N2CRichTextSyntaxHighlighter.h"
 #include "Code Editor/Models/N2CCodeEditorStyle.h"
 
@@ -208,7 +209,8 @@ void SN2CCodeEditor::DeleteSelectedText()
 {
     if (EditableText.IsValid())
     {
-        EditableText->DeleteSelectedText();
+        // UE4.27 does not have DeleteSelectedText, use InsertTextAtCursor with empty string instead
+        EditableText->InsertTextAtCursor(FString());
     }
 }
 
@@ -232,47 +234,21 @@ void SN2CCodeEditor::SetCursorPosition(int32 Line, int32 Column)
 
 void SN2CCodeEditor::GetCursorPosition(int32& OutLine, int32& OutColumn) const
 {
-    if (EditableText.IsValid())
-    {
-        FTextLocation Location = EditableText->GetCursorLocation();
-        OutLine = Location.GetLineIndex();
-        OutColumn = Location.GetOffset();
-    }
-    else
-    {
-        OutLine = 0;
-        OutColumn = 0;
-    }
+    // UE4.27 does not have GetCursorLocation
+    OutLine = 0;
+    OutColumn = 0;
 }
 
 void SN2CCodeEditor::SelectText(int32 StartLine, int32 StartColumn, int32 EndLine, int32 EndColumn)
 {
-    if (EditableText.IsValid())
-    {
-        EditableText->SelectText(
-            FTextLocation(StartLine, StartColumn),
-            FTextLocation(EndLine, EndColumn)
-        );
-    }
+    // UE4.27 does not have SelectText on SMultiLineEditableText
 }
 
 void SN2CCodeEditor::GetSelection(int32& OutStartIndex, int32& OutEndIndex) const
 {
-    if (EditableText.IsValid())
-    {
-        FTextSelection Selection = EditableText->GetSelection();
-        const FTextLocation& Begin = Selection.GetBeginning();
-        const FTextLocation& End = Selection.GetEnd();
-        
-        // Convert line/column positions to indices
-        OutStartIndex = Begin.GetLineIndex();
-        OutEndIndex = End.GetLineIndex();
-    }
-    else
-    {
-        OutStartIndex = 0;
-        OutEndIndex = 0;
-    }
+    // UE4.27 does not have GetSelection on SMultiLineEditableText
+    OutStartIndex = 0;
+    OutEndIndex = 0;
 }
 
 void SN2CCodeEditor::SetFontSize(int32 NewSize)
@@ -281,9 +257,8 @@ void SN2CCodeEditor::SetFontSize(int32 NewSize)
     
     if (EditableText.IsValid())
     {
-        // Store current text and cursor position
+        // Store current text (UE4.27 does not have GetCursorLocation)
         FText CurrentText = EditableText->GetText();
-        FTextLocation CursorLocation = EditableText->GetCursorLocation();
         
         // Update the text style with new font size
         TextStyle.SetFont(FCoreStyle::GetDefaultFontStyle("Mono", FontSize));
@@ -305,9 +280,8 @@ void SN2CCodeEditor::SetFontSize(int32 NewSize)
         // Replace the old widget with the new one
         EditableText = NewTextWidget;
         
-        // Restore cursor position
-        EditableText->GoTo(CursorLocation);
-        EditableText->ScrollTo(CursorLocation);
+        // UE4.27: reset to beginning since we can't save/restore cursor position
+        EditableText->GoTo(FTextLocation(0, 0));
         
         // Update the child slot with the new widget
         ChildSlot

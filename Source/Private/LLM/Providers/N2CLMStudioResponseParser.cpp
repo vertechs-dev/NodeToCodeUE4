@@ -63,9 +63,9 @@ bool UN2CLMStudioResponseParser::ParseLLMResponse(
     const TSharedPtr<FJsonObject> StatsObject = JsonObject->GetObjectField(TEXT("stats"));
     if (StatsObject.IsValid())
     {
-        float TokensPerSecond = 0.0f;
-        float TimeToFirstToken = 0.0f;
-        float GenerationTime = 0.0f;
+        double TokensPerSecond = 0.0;
+        double TimeToFirstToken = 0.0;
+        double GenerationTime = 0.0;
         
         StatsObject->TryGetNumberField(TEXT("tokens_per_second"), TokensPerSecond);
         StatsObject->TryGetNumberField(TEXT("time_to_first_token"), TimeToFirstToken);

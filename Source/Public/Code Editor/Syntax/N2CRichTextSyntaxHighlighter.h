@@ -48,9 +48,9 @@ public:
     virtual ~FN2CRichTextSyntaxHighlighter();
 
 protected:
-    virtual void ParseTokens(const FString& SourceString, FTextLayout& TargetTextLayout, TArray<ISyntaxTokenizer::FTokenizedLine> TokenizedLines) override;
+    virtual void ParseTokens(const FString& SourceString, FTextLayout& TargetTextLayout, TArray<FSyntaxTokenizer::FTokenizedLine> TokenizedLines) override;
 
-    FN2CRichTextSyntaxHighlighter(TSharedPtr<ISyntaxTokenizer> InTokenizer, const FSyntaxTextStyle& InSyntaxTextStyle, TSharedPtr<FN2CSyntaxDefinition> InSyntaxDef);
+    FN2CRichTextSyntaxHighlighter(TSharedPtr<FSyntaxTokenizer> InTokenizer, const FSyntaxTextStyle& InSyntaxTextStyle, TSharedPtr<FN2CSyntaxDefinition> InSyntaxDef);
 
 private:
     /** Check if a string represents a numeric value */

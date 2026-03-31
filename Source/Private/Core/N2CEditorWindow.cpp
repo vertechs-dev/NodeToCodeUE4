@@ -1,11 +1,9 @@
 // Copyright (c) 2025 Nick McClure (Protospatial). All Rights Reserved.
 
 #include "Core/N2CEditorWindow.h"
-#include "Core/N2CWidgetContainer.h"
-#include "EditorUtilityWidget.h"
-#include "EditorUtilityWidgetBlueprint.h"
 #include "Utils/N2CLogger.h"
 #include "Widgets/Docking/SDockTab.h"
+#include "Widgets/Text/STextBlock.h"
 
 const FName SN2CEditorWindow::TabId(TEXT("NodeToCodeEditor"));
 TWeakPtr<SDockTab> SN2CEditorWindow::ActiveTab;
@@ -65,41 +63,10 @@ void SN2CEditorWindow::OnTabClosed(TSharedRef<SDockTab> ClosedTab)
 
 void SN2CEditorWindow::Construct(const FArguments& InArgs)
 {
-    // 1) Load the widget blueprint
-    FString AssetPath = TEXT("/Script/Blutility.EditorUtilityWidgetBlueprint'/NodeToCode/UI/NodeToCodeUI.NodeToCodeUI'");
-    UEditorUtilityWidgetBlueprint* EditorBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, *AssetPath);
-    if (!EditorBP)
-    {
-        FN2CLogger::Get().LogError(
-            FString::Printf(TEXT("Failed to load NodeToCodeUI blueprint at path: %s"), 
-            *AssetPath));
-        return;
-    }
-
-    // 2) Manually create the widget (instead of SpawnAndRegisterTab)
-    UClass* WidgetClass = EditorBP->GeneratedClass;
-    if (!WidgetClass || !WidgetClass->IsChildOf(UEditorUtilityWidget::StaticClass()))
-    {
-        FN2CLogger::Get().LogError(TEXT("Loaded blueprint is not a valid Editor Utility Widget class"));
-        return;
-    }
-
-    // Use our persistent container as the outer
-    UEditorUtilityWidget* EditorWidget = NewObject<UEditorUtilityWidget>(
-        UN2CWidgetContainer::Get(),
-        WidgetClass
-    );
-    if (!EditorWidget)
-    {
-        FN2CLogger::Get().LogError(TEXT("Failed to create Editor Utility Widget instance"));
-        return;
-    }
-
-    // 3) Embed the widget's Slate widget in our Nomad tab
     ChildSlot
     [
-        EditorWidget->TakeWidget()
+        SNew(STextBlock)
+            .Text(NSLOCTEXT("NodeToCode", "PlaceholderUI", "Node to Code - UI under construction (UE4.27 port)"))
     ];
-
-    FN2CLogger::Get().Log(TEXT("Successfully created and embedded NodeToCodeUI widget"), EN2CLogSeverity::Info);
+    FN2CLogger::Get().Log(TEXT("SN2CEditorWindow constructed (stub UI)"), EN2CLogSeverity::Info);
 }

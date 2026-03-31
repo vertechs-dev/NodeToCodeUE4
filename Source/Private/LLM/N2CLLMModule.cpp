@@ -471,7 +471,7 @@ bool UN2CLLMModule::CreateServiceForProvider(EN2CLLMProvider Provider)
     }
 
     // Initialize service
-    if (!ServiceInterface.GetInterface()->Initialize(Config))
+    if (!ServiceInterface->Initialize(Config))
     {
         FN2CLogger::Get().LogError(TEXT("Failed to initialize service"), TEXT("LLMModule"));
         return false;

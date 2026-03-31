@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Misc/FileHelper.h"
 #include "N2CUserSecrets.h"
 #include "Code Editor/Models/N2CCodeLanguage.h"
 #include "Engine/DeveloperSettings.h"

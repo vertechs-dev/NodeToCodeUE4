@@ -19,7 +19,7 @@
                         "Name":  "NodeToCode",
                         "Type":  "Editor",
                         "LoadingPhase":  "PostEngineInit",
-                        "PlatformAllowList":  [
+                        "WhitelistPlatforms":  [
                                                   "Win64",
                                                   "Mac"
                                               ]

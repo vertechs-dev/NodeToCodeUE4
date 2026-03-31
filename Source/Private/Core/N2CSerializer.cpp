@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Nick McClure (Protospatial). All Rights Reserved.
 
 #include "Core/N2CSerializer.h"
+#include "Policies/CondensedJsonPrintPolicy.h"
 #include "Utils/N2CLogger.h"
 
 // Initialize static members

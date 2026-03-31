@@ -46,7 +46,7 @@
 #include "K2Node_Event.h"
 #include "K2Node_EventNodeInterface.h"
 #include "K2Node_ExecutionSequence.h"
-#include "K2Node_ExternalGraphInterface.h"
+// K2Node_ExternalGraphInterface.h does not exist in UE 4.27
 #include "K2Node_ForEachElementInEnum.h"
 #include "K2Node_FormatText.h"
 #include "K2Node_FunctionEntry.h"
@@ -87,7 +87,7 @@
 #include "K2Node_MathExpression.h"
 #include "K2Node_Message.h"
 #include "K2Node_MultiGate.h"
-#include "K2Node_PromotableOperator.h"
+// K2Node_PromotableOperator.h does not exist in UE 4.27
 #include "K2Node_PureAssignmentStatement.h"
 #include "K2Node_RemoveDelegate.h"
 #include "K2Node_Select.h"
@@ -598,11 +598,7 @@ bool FN2CNodeTypeRegistry::MapFromInheritance(const UK2Node* Node, EN2CNodeType&
         return true;
     }
 
-    if (Node->IsA<UK2Node_ExternalGraphInterface>())
-    {
-        OutType = EN2CNodeType::ExternalGraphInterface;
-        return true;
-    }
+    // UK2Node_ExternalGraphInterface does not exist in UE 4.27
 
     if (Node->IsA<UK2Node_ForEachElementInEnum>())
     {
@@ -832,11 +828,7 @@ bool FN2CNodeTypeRegistry::MapFromInheritance(const UK2Node* Node, EN2CNodeType&
         return true;
     }
 
-    if (Node->IsA<UK2Node_PromotableOperator>())
-    {
-        OutType = EN2CNodeType::PromotableOperator;
-        return true;
-    }
+    // UK2Node_PromotableOperator does not exist in UE 4.27
 
     if (Node->IsA<UK2Node_PureAssignmentStatement>())
     {

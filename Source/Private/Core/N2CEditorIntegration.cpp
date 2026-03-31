@@ -13,6 +13,9 @@
 #include "Core/N2CToolbarCommand.h"
 #include "LLM/N2CLLMModule.h"
 #include "LLM/N2CLLMTypes.h"
+#include "Models/N2CStyle.h"
+#include "Styling/SlateStyleRegistry.h"
+#include "Subsystems/AssetEditorSubsystem.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
 
@@ -137,16 +140,10 @@ void FN2CEditorIntegration::Initialize()
     if (GEditor)
     {
         UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
-        if (ensure(AssetEditorSubsystem))
+        if (AssetEditorSubsystem)
         {
-            AssetEditorSubsystem->OnAssetEditorOpened().AddLambda([this](UObject* Asset)
-            {
-                if (IAssetEditorInstance* EditorInstance = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->FindEditorForAsset(Asset, false))
-                {
-                    HandleAssetEditorOpened(Asset, EditorInstance);
-                }
-            });
-            FN2CLogger::Get().Log(TEXT("N2C Editor Integration: Subscribed to OnAssetEditorOpened via AssetEditorSubsystem"), EN2CLogSeverity::Info);
+            AssetEditorSubsystem->OnAssetOpenedInEditor().AddRaw(this, &FN2CEditorIntegration::HandleAssetEditorOpened);
+            FN2CLogger::Get().Log(TEXT("N2C Editor Integration: Subscribed to OnAssetOpenedInEditor via AssetEditorSubsystem"), EN2CLogSeverity::Info);
         }
     }
 
@@ -167,7 +164,7 @@ void FN2CEditorIntegration::Shutdown()
         UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
         if (AssetEditorSubsystem)
         {
-            AssetEditorSubsystem->OnAssetEditorOpened().RemoveAll(this);
+            AssetEditorSubsystem->OnAssetOpenedInEditor().RemoveAll(this);
         }
     }
 
@@ -338,27 +335,39 @@ void FN2CEditorIntegration::RegisterToolbarForEditor(TSharedPtr<FBlueprintEditor
         CommandList,
         FToolBarExtensionDelegate::CreateLambda([CommandList](FToolBarBuilder& Builder)
         {
-            Builder.BeginSection("NodeToCode");
-            
-            // Add dropdown button
+            Builder.AddSeparator();
+
+            // Verify style is loaded and log the path for debugging
+            const FSlateBrush* TestBrush = FSlateStyleRegistry::FindSlateStyle("NodeToCodeStyle") ?
+                FSlateStyleRegistry::FindSlateStyle("NodeToCodeStyle")->GetBrush("NodeToCode.ToolbarButton") : nullptr;
+            FN2CLogger::Get().Log(
+                FString::Printf(TEXT("Toolbar icon brush: %s"), TestBrush ? *TestBrush->GetResourceName().ToString() : TEXT("NOT FOUND")),
+                EN2CLogSeverity::Info);
+
+            // Main translate button (most common action)
+            Builder.AddToolBarButton(
+                FN2CToolbarCommand::Get().CollectNodesCommand,
+                NAME_None,
+                NSLOCTEXT("NodeToCode", "TranslateLabel", "Node to Code"),
+                NSLOCTEXT("NodeToCode", "TranslateTooltip", "Translate selected Blueprint nodes to code"),
+                FSlateIcon(FName("NodeToCodeStyle"), FName("NodeToCode.ToolbarButton"), FName("NodeToCode.ToolbarButton.Small"))
+            );
+
+            // Dropdown for secondary actions
             Builder.AddComboButton(
                 FUIAction(),
                 FOnGetContent::CreateLambda([CommandList]() -> TSharedRef<SWidget>
                 {
                     FMenuBuilder MenuBuilder(true, CommandList);
-                    
                     MenuBuilder.AddMenuEntry(FN2CToolbarCommand::Get().OpenWindowCommand);
-                    MenuBuilder.AddMenuEntry(FN2CToolbarCommand::Get().CollectNodesCommand);
                     MenuBuilder.AddMenuEntry(FN2CToolbarCommand::Get().CopyJsonCommand);
-
                     return MenuBuilder.MakeWidget();
                 }),
-                NSLOCTEXT("NodeToCode", "NodeToCodeActions", "Node to Code"),
-                NSLOCTEXT("NodeToCode", "NodeToCodeTooltip", "Node to Code Actions"),
-                FSlateIcon("NodeToCodeStyle", "NodeToCode.ToolbarButton")
+                FText::GetEmpty(),
+                NSLOCTEXT("NodeToCode", "MoreActionsTooltip", "More Node to Code actions"),
+                FSlateIcon(),
+                true  // bSimpleComboBox
             );
-            
-            Builder.EndSection();
         })
     );
 
