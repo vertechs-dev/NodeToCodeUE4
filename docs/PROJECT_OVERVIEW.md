@@ -28,7 +28,7 @@ UN2CBaseLLMService        Provider-specific formatting & HTTP dispatch
 UN2CResponseParserBase    Parses LLM response into FN2CTranslationResponse
     |
     v
-SN2CEditorWindow          Displays results (stub UI in UE4.27 port)
+SN2CEditorWindow          Displays results in full Slate UI (code editors, loading states)
 ```
 
 ## Source Layout

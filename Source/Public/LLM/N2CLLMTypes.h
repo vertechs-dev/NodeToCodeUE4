@@ -15,6 +15,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTranslationResponseReceived, con
 /** Delegate for when a translation request is sent */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTranslationRequestSent);
 
+/** Native (non-dynamic) delegates for C++ Slate widget binding */
+DECLARE_MULTICAST_DELEGATE(FOnTranslationRequestSentNative);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTranslationResponseReceivedNative, const FN2CTranslationResponse&, bool);
+
 /** Available LLM providers */
 UENUM(BlueprintType)
 enum class EN2CLLMProvider : uint8

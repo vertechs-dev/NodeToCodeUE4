@@ -14,7 +14,7 @@ UE4.27.2 port of the NodeToCode plugin (originally UE5.3+). Translates Blueprint
 | Path | Purpose |
 |------|---------|
 | `C:\NodeToCodeUE4` | Git repo root |
-| `.claude/worktrees/ue4-port/` | Active development worktree |
+| `.claude/worktrees/<worktree>/` | Active development worktree |
 | `F:\UE4\Projects\Wiz98\Plugins\NodeToCode` | Junction into worktree |
 
 ## Build Commands
@@ -37,8 +37,8 @@ The plugin source is linked into the test project via a Windows junction. Check 
 # Verify
 ls "F:/UE4/Projects/Wiz98/Plugins/NodeToCode/NodeToCode.uplugin"
 
-# Recreate if broken
-cmd //c "mklink /J F:\UE4\Projects\Wiz98\Plugins\NodeToCode C:\NodeToCodeUE4\.claude\worktrees\ue4-port"
+# Recreate if broken (replace <worktree> with actual worktree directory name)
+cmd //c "mklink /J F:\UE4\Projects\Wiz98\Plugins\NodeToCode C:\NodeToCodeUE4\.claude\worktrees\<worktree>"
 ```
 
 Junctions break if the target directory is deleted (e.g., worktree pruning). Always commit before ending a session.
@@ -51,7 +51,7 @@ Pipeline: **Collect -> Translate -> Serialize -> LLM -> Parse -> Display**
 - `FN2CNodeTranslator` - Converts to FN2CBlueprint via 12 specialized processors
 - `FN2CSerializer` - JSON serialization (compact, token-efficient)
 - `UN2CLLMModule` - Orchestrates LLM request/response (6 providers)
-- `SN2CEditorWindow` - Results display (currently stub UI)
+- `SN2CEditorWindow` - Results display (full Slate UI with code editors, loading states, graph switching)
 
 See `docs/PROJECT_OVERVIEW.md` for full architecture details.
 
@@ -64,6 +64,7 @@ When writing new code or modifying existing code, follow these UE4.27 constraint
 - Use `ESPMode::ThreadSafe` explicitly on `TSharedRef<IHttpRequest>`
 - Use `GetPathName()` not `GetStructPathName()` on UScriptStruct
 - Use `operator->` on TScriptInterface, not `.GetInterface()->`
+- `DECLARE_DYNAMIC_MULTICAST_DELEGATE` requires UObject+UFUNCTION for binding; use parallel native `DECLARE_MULTICAST_DELEGATE` for Slate widget binding via `AddRaw()`
 - `TryGetNumberField` expects `double&` not `float&`
 - No `PC_Double` or `PC_Real` pin types (only `PC_Float`)
 - No `UK2Node_ExternalGraphInterface` or `UK2Node_PromotableOperator`
@@ -75,9 +76,16 @@ See `docs/UE4_PORT_GUIDE.md` for the complete API change reference.
 
 ## Remaining Work
 
-- **Slate UI rebuild**: `SN2CEditorWindow` is a placeholder. Needs full translation display UI in pure Slate.
 - **Toolbar icon**: Registered but may not render on all configurations. Investigate if not visible.
 - **Code editor stubs**: `SN2CCodeEditor` has stubbed cursor/selection methods for 4.27 compatibility.
+- **Settings location**: Plugin settings are in **Project Settings > Plugins > Node to Code** (not Editor Preferences), because `UDeveloperSettings` with `Config=NodeToCode` defaults container to "Project".
+
+## Completed Work
+
+- **Slate UI rebuild**: `SN2CEditorWindow` fully rebuilt with SWidgetSwitcher (welcome/loading/results/error panels), dual SN2CCodeEditor widgets, SComboBox graph selector, copy/open-folder buttons, and native delegate subscriptions.
+- **Native delegates**: Added `FOnTranslationRequestSentNative` and `FOnTranslationResponseReceivedNative` alongside existing dynamic delegates in `UN2CLLMModule` for Slate widget binding.
+- **Anthropic model updates**: Updated to Claude Opus 4.6, Sonnet 4.6, Haiku 4.5 with correct API model IDs (no date suffix for 4.6 models). Updated pricing for Opus 4.6 ($5/$25 per MTok).
+- **Max tokens**: Increased Anthropic max_tokens from 8192 to 16384 to prevent truncated responses on larger Blueprints.
 
 ## Documentation
 

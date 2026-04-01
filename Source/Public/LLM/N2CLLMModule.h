@@ -56,6 +56,10 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Node to Code | LLM Module")
     FOnTranslationRequestSent OnTranslationRequestSent;
 
+    /** Native delegates for C++ Slate widget binding (non-dynamic, supports AddRaw/AddLambda) */
+    FOnTranslationRequestSentNative OnTranslationRequestSentNative;
+    FOnTranslationResponseReceivedNative OnTranslationResponseReceivedNative;
+
     /** Get the current system status */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Node to Code | LLM Module")
     EN2CSystemStatus GetSystemStatus() const { return CurrentStatus; }

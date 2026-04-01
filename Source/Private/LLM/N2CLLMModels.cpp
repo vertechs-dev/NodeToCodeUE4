@@ -28,11 +28,12 @@ const TMap<EN2CGeminiModel, FN2CGeminiPricing> FN2CLLMModelUtils::GeminiPricing 
 };
 
 const TMap<EN2CAnthropicModel, FN2CAnthropicPricing> FN2CLLMModelUtils::AnthropicPricing = {
-    {EN2CAnthropicModel::Claude4_Opus, FN2CAnthropicPricing(15.0f, 75.0f)},
+    {EN2CAnthropicModel::Claude4_6_Opus, FN2CAnthropicPricing(5.0f, 25.0f)},
+    {EN2CAnthropicModel::Claude4_6_Sonnet, FN2CAnthropicPricing(3.0f, 15.0f)},
+    {EN2CAnthropicModel::Claude4_5_Haiku, FN2CAnthropicPricing(0.8f, 4.0f)},
     {EN2CAnthropicModel::Claude4_Sonnet, FN2CAnthropicPricing(3.0f, 15.0f)},
     {EN2CAnthropicModel::Claude3_7_Sonnet, FN2CAnthropicPricing(3.0f, 15.0f)},
     {EN2CAnthropicModel::Claude3_5_Sonnet, FN2CAnthropicPricing(3.0f, 15.0f)},
-    {EN2CAnthropicModel::Claude3_5_Haiku, FN2CAnthropicPricing(0.8f, 4.0f)}
 };
 
 const TMap<EN2CDeepSeekModel, FN2CDeepSeekPricing> FN2CLLMModelUtils::DeepSeekPricing = {
@@ -71,18 +72,20 @@ FString FN2CLLMModelUtils::GetAnthropicModelValue(EN2CAnthropicModel Model)
 {
     switch (Model)
     {
-        case EN2CAnthropicModel::Claude4_Opus:
-            return TEXT("claude-4-opus-20250514");
+        case EN2CAnthropicModel::Claude4_6_Opus:
+            return TEXT("claude-opus-4-6");
+        case EN2CAnthropicModel::Claude4_6_Sonnet:
+            return TEXT("claude-sonnet-4-6");
+        case EN2CAnthropicModel::Claude4_5_Haiku:
+            return TEXT("claude-haiku-4-5-20241022");
         case EN2CAnthropicModel::Claude4_Sonnet:
-            return TEXT("claude-4-sonnet-20250514");
+            return TEXT("claude-sonnet-4-20250514");
         case EN2CAnthropicModel::Claude3_7_Sonnet:
             return TEXT("claude-3-7-sonnet-20250219");
         case EN2CAnthropicModel::Claude3_5_Sonnet:
             return TEXT("claude-3-5-sonnet-20241022");
-        case EN2CAnthropicModel::Claude3_5_Haiku:
-            return TEXT("claude-3-5-haiku-20241022");
         default:
-            return TEXT("claude-4-sonnet-20250514");
+            return TEXT("claude-sonnet-4-6");
     }
 }
 

@@ -79,6 +79,7 @@ void UN2CLLMModule::ProcessN2CJson(
     
     // Broadcast that request is being sent
     OnTranslationRequestSent.Broadcast();
+    OnTranslationRequestSentNative.Broadcast();
 
     if (!ActiveService.GetInterface())
     {
@@ -139,6 +140,7 @@ void UN2CLLMModule::ProcessN2CJson(
                         }
                             
                         OnTranslationResponseReceived.Broadcast(TranslationResponse, true);
+                        OnTranslationResponseReceivedNative.Broadcast(TranslationResponse, true);
                         FN2CLogger::Get().Log(TEXT("Successfully parsed LLM response"), EN2CLogSeverity::Info);
                     }
                     else
@@ -146,6 +148,7 @@ void UN2CLLMModule::ProcessN2CJson(
                         CurrentStatus = EN2CSystemStatus::Error;
                         FN2CLogger::Get().LogError(TEXT("Failed to parse LLM response"));
                         OnTranslationResponseReceived.Broadcast(TranslationResponse, false);
+                        OnTranslationResponseReceivedNative.Broadcast(TranslationResponse, false);
                     }
                 }
                 else
@@ -153,6 +156,7 @@ void UN2CLLMModule::ProcessN2CJson(
                     CurrentStatus = EN2CSystemStatus::Error;
                     FN2CLogger::Get().LogError(TEXT("No response parser available"));
                     OnTranslationResponseReceived.Broadcast(TranslationResponse, false);
+                    OnTranslationResponseReceivedNative.Broadcast(TranslationResponse, false);
                 }
             }
             else
@@ -160,6 +164,7 @@ void UN2CLLMModule::ProcessN2CJson(
                 CurrentStatus = EN2CSystemStatus::Error;
                 FN2CLogger::Get().LogError(TEXT("No active LLM service"));
                 OnTranslationResponseReceived.Broadcast(TranslationResponse, false);
+                OnTranslationResponseReceivedNative.Broadcast(TranslationResponse, false);
             }
         }));
 }

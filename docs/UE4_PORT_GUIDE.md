@@ -150,8 +150,27 @@ These are in the code editor widget which is marked for a full Slate rebuild.
 | `TimeoutConfig->TryUpdateDefaultConfigFile()` | Use `SaveConfig()` instead | NodeToCode.cpp |
 | `FConfigCacheIni::LoadGlobalIniFile()` | Not needed with `SaveConfig()` | NodeToCode.cpp |
 
+### Dynamic Delegate Binding from Slate Widgets
+| UE5 | UE4.27 | File |
+|-----|--------|------|
+| `DECLARE_DYNAMIC_MULTICAST_DELEGATE` + AddDynamic on UObject | Same limitation exists | N2CLLMTypes.h, N2CLLMModule.h |
+
+In both UE4.27 and UE5, `DECLARE_DYNAMIC_MULTICAST_DELEGATE` requires a UObject with a UFUNCTION to bind via `AddDynamic`. Slate widgets (`SCompoundWidget`) are not UObjects. The solution is to add parallel native C++ delegates (`DECLARE_MULTICAST_DELEGATE`) that support `AddRaw()` binding to any class, and broadcast both delegate types. This was done for `OnTranslationRequestSent` and `OnTranslationResponseReceived` in `UN2CLLMModule`.
+
+### UDeveloperSettings Container Name
+| UE5 | UE4.27 | File |
+|-----|--------|------|
+| `GetContainerName()` defaults based on Config name | Same behavior | N2CSettings.h |
+
+`UDeveloperSettings::GetContainerName()` returns `"Editor"` only if `ClassConfigName` is `"EditorSettings"` or `"EditorPerProjectUserSettings"`. Custom config names (like `Config=NodeToCode`) default to `"Project"`, so settings appear in **Project Settings > Plugins**, not Editor Preferences.
+
+## Completed Work
+
+- **Slate UI Rebuild:** `SN2CEditorWindow` fully rebuilt with `SWidgetSwitcher` (welcome/loading/results/error panels), dual `SN2CCodeEditor` widgets with syntax highlighting, `SComboBox` graph selector for multi-graph Blueprints, copy-to-clipboard buttons, and Open Folder button. Uses native delegate binding to `UN2CLLMModule`.
+- **Anthropic Model Updates:** Updated to Claude Opus 4.6, Sonnet 4.6, Haiku 4.5 with correct API model IDs. Note: 4.6 models use IDs without date suffix (e.g., `claude-sonnet-4-6` not `claude-sonnet-4-6-20250514`).
+- **Max Tokens:** Increased Anthropic `max_tokens` from 8192 to 16384 to prevent truncated responses on larger Blueprint graphs.
+
 ## Remaining Work
 
-- **Slate UI Rebuild:** The editor window (`SN2CEditorWindow`) currently shows a placeholder. The full translation display UI needs to be rebuilt in pure Slate (replacing the UE5 Editor Utility Widget).
-- **Code Editor Widget Stubs:** `SN2CCodeEditor` has stubbed-out cursor/selection methods. These should be implemented if the code editor is used in the new Slate UI.
+- **Code Editor Widget Stubs:** `SN2CCodeEditor` has stubbed-out cursor/selection methods. These should be implemented if interactive editing is needed.
 - **Toolbar Icon:** The toolbar button icon (`Resources/button_icon.png`) is registered at 40x40/20x20 but may not render on all toolbar configurations. Investigate if the icon is showing correctly.

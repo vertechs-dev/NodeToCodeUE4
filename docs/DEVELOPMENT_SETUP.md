@@ -129,9 +129,9 @@ When starting a new session that needs to build or test this plugin:
    ls "F:/UE4/Projects/Wiz98/Plugins/NodeToCode/NodeToCode.uplugin"
    ```
 
-2. **If broken, recreate it:**
+2. **If broken, recreate it (replace `<worktree>` with actual worktree directory name):**
    ```bash
-   cmd //c "mklink /J F:\UE4\Projects\Wiz98\Plugins\NodeToCode C:\NodeToCodeUE4\.claude\worktrees\ue4-port"
+   cmd //c "mklink /J F:\UE4\Projects\Wiz98\Plugins\NodeToCode C:\NodeToCodeUE4\.claude\worktrees\<worktree>"
    ```
 
 3. **Build command:**
@@ -153,7 +153,15 @@ When starting a new session that needs to build or test this plugin:
 | Path | Purpose |
 |------|---------|
 | `C:\NodeToCodeUE4` | Git repository root |
-| `C:\NodeToCodeUE4\.claude\worktrees\ue4-port` | Active development worktree |
+| `C:\NodeToCodeUE4\.claude\worktrees\<worktree>` | Active development worktree (name varies per session) |
 | `F:\UE4\UE_4.27` | UE 4.27.2 engine install |
 | `F:\UE4\Projects\Wiz98` | Test project (Wiz98.uproject) |
 | `F:\UE4\Projects\Wiz98\Plugins\NodeToCode` | Junction -> worktree |
+
+### Plugin Settings
+
+Plugin settings are in **Project Settings > Plugins > Node to Code** (not Editor Preferences). Configure:
+- **Provider** — Select LLM provider (Anthropic, OpenAI, Gemini, DeepSeek, Ollama, LM Studio)
+- **Model** — Select model for the chosen provider
+- **API Key** — Paste API key for cloud providers
+- **Target Language** — Output language (C++, Python, JavaScript, C#, Swift, Pseudocode)
