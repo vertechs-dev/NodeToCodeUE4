@@ -46,7 +46,7 @@ void SN2CEditorWindow::RegisterTabSpawner()
         FOnSpawnTab::CreateStatic(&SN2CEditorWindow::SpawnTab))
         .SetDisplayName(LOCTEXT("TabTitle", "Node to Code"))
         .SetMenuType(ETabSpawnerMenuType::Hidden)
-        .SetIcon(FSlateIcon("NodeToCodeStyle", "NodeToCode.ToolbarButton"));
+        .SetIcon(FSlateIcon("NodeToCodeStyle", "NodeToCode.TabIcon"));
 
     FN2CLogger::Get().Log(TEXT("Registered Node to Code tab spawner"), EN2CLogSeverity::Info);
 }
@@ -82,6 +82,15 @@ void SN2CEditorWindow::OnTabClosed(TSharedRef<SDockTab> ClosedTab)
     if (ActiveTab.Pin() == ClosedTab)
     {
         ActiveTab.Reset();
+    }
+}
+
+void SN2CEditorWindow::CloseTab()
+{
+    TSharedPtr<SDockTab> Tab = ActiveTab.Pin();
+    if (Tab.IsValid())
+    {
+        Tab->RequestCloseTab();
     }
 }
 
@@ -425,7 +434,6 @@ void SN2CEditorWindow::HandleTranslationResponseReceived(const FN2CTranslationRe
 
     // Cache the response
     CachedResponse = Response;
-    CurrentGraphIndex = 0;
 
     // Rebuild graph name options for the combo box
     GraphNameOptions.Empty();
@@ -434,14 +442,25 @@ void SN2CEditorWindow::HandleTranslationResponseReceived(const FN2CTranslationRe
         GraphNameOptions.Add(MakeShareable(new FString(Graph.GraphName)));
     }
 
+    // Pick the best default graph: prefer EventGraph, then Function graphs, then first
+    CurrentGraphIndex = 0;
+    for (int32 i = 0; i < Response.Graphs.Num(); ++i)
+    {
+        if (Response.Graphs[i].GraphType == TEXT("EventGraph"))
+        {
+            CurrentGraphIndex = i;
+            break;
+        }
+    }
+
     // Show/hide graph selector
     if (GraphSelector.IsValid())
     {
         GraphSelector->SetVisibility(Response.Graphs.Num() > 1 ? EVisibility::Visible : EVisibility::Collapsed);
         GraphSelector->RefreshOptions();
-        if (GraphNameOptions.Num() > 0)
+        if (GraphNameOptions.IsValidIndex(CurrentGraphIndex))
         {
-            GraphSelector->SetSelectedItem(GraphNameOptions[0]);
+            GraphSelector->SetSelectedItem(GraphNameOptions[CurrentGraphIndex]);
         }
     }
 
@@ -457,8 +476,8 @@ void SN2CEditorWindow::HandleTranslationResponseReceived(const FN2CTranslationRe
     }
     StatusText->SetText(FText::FromString(StatusStr));
 
-    // Populate the UI
-    PopulateUIForGraph(0);
+    // Populate the UI with the selected default graph
+    PopulateUIForGraph(CurrentGraphIndex);
     SetActivePanel(2); // Results
 
     FN2CLogger::Get().Log(TEXT("Editor window populated with translation results"), EN2CLogSeverity::Info);

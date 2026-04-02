@@ -57,6 +57,8 @@ TSharedRef<FSlateStyleSet> N2CStyle::Create()
         new N2C_PLUGIN_BRUSH(TEXT("button_icon"), FVector2D(40.0f, 40.0f)));
     Style->Set("NodeToCode.ToolbarButton.Small",
         new N2C_PLUGIN_BRUSH(TEXT("button_icon"), FVector2D(20.0f, 20.0f)));
+    Style->Set("NodeToCode.TabIcon",
+        new N2C_PLUGIN_BRUSH(TEXT("button_icon"), FVector2D(16.0f, 16.0f)));
 
     return Style;
 }

@@ -426,11 +426,8 @@ void FN2CEditorIntegration::ExecuteCollectNodesForEditor(TWeakPtr<FBlueprintEdit
 
     FN2CLogger::Get().Log(TEXT("ExecuteCollectNodesForEditor called"), EN2CLogSeverity::Debug);
 
-    // Show the window as a tab
-    FGlobalTabmanager::Get()->TryInvokeTab(SN2CEditorWindow::TabId);
-    FN2CLogger::Get().Log(TEXT("Node to Code window shown"), EN2CLogSeverity::Debug);
-
-    // Get the editor pointer
+    // Get the editor pointer BEFORE invoking the tab, because TryInvokeTab
+    // can shift focus to a different editor/tab and change which graph is "focused"
     TSharedPtr<FBlueprintEditor> Editor = InEditor.Pin();
     if (!Editor.IsValid())
     {
@@ -439,13 +436,23 @@ void FN2CEditorIntegration::ExecuteCollectNodesForEditor(TWeakPtr<FBlueprintEdit
     }
     FN2CLogger::Get().Log(TEXT("Successfully obtained Blueprint Editor pointer"), EN2CLogSeverity::Info);
 
-    // Get focused graph
+    // Capture the focused graph BEFORE opening the results tab
     UEdGraph* FocusedGraph = Editor->GetFocusedGraph();
     if (!FocusedGraph)
     {
         FN2CLogger::Get().LogError(TEXT("No focused graph in Blueprint Editor"));
         return;
     }
+
+    // Close any existing tab first so TryInvokeTab re-spawns it in the
+    // currently active window (the one where the toolbar button was clicked),
+    // rather than activating it wherever it was previously docked
+    if (SN2CEditorWindow::IsTabOpen())
+    {
+        SN2CEditorWindow::CloseTab();
+    }
+    FGlobalTabmanager::Get()->TryInvokeTab(SN2CEditorWindow::TabId);
+    FN2CLogger::Get().Log(TEXT("Node to Code tab spawned in active window"), EN2CLogSeverity::Debug);
 
     FString GraphName = FocusedGraph->GetName();
     FString BlueprintName = TEXT("Unknown");

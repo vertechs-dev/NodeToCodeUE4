@@ -38,6 +38,12 @@ public:
     /** Get the tab identifier */
     static const FName TabId;
 
+    /** Check if the tab is currently open */
+    static bool IsTabOpen() { return ActiveTab.IsValid(); }
+
+    /** Close the existing tab so it can be re-spawned in a different tab well */
+    static void CloseTab();
+
 private:
     // --- Delegate handlers ---
     void HandleTranslationRequestSent();
